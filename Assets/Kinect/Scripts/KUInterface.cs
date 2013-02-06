@@ -241,14 +241,21 @@ public class KUInterface : MonoBehaviour {
 		leftForearmVec.Normalize();
 		leftArmVec.Normalize();
 		
-		if (Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
-			Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0)) < 0.2f)
+		if (		Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+					Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0)) < 0.4f &&
+					Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+					Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0)) < 0.4f)
 			Debug.Log("Lightning");
-		else if (Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+		else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
 					Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
 					Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
 					Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f)
 			Debug.Log("Force Push");
+		else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
+					Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
+					Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
+					Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f)
+			Debug.Log("Heal");
 		else if(magHandVec <= 0.10f)
 			Debug.Log("Lightsaber");
 		Debug.Log(handVec);
