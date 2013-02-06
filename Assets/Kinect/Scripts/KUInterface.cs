@@ -25,7 +25,7 @@ public class KUInterface : MonoBehaviour {
     /// <summary>
     /// scales all joint positions by given amount. Do not set to zero.
     /// </summary>
-    public int scaleFactor = 1000;
+    public float scaleFactor = 1000;
     /// <summary>
     /// set to true to track two skeletons
     /// </summary>
@@ -209,7 +209,33 @@ public class KUInterface : MonoBehaviour {
             KinectWrapper.NuiContextUnInit();
         }
     }
-
+	
+	float alpha = 0.1f;
+	int tau = 3;
+	Vector3 pPredictionR = new Vector3(0,0,0);
+	Vector3 spLastR = new Vector3(0,0,0);
+	Vector3 s2pLastR = new Vector3(0,0,0);
+	
+	Vector3 pPredictionL = new Vector3(0,0,0);
+	Vector3 spLastL = new Vector3(0,0,0);
+	Vector3 s2pLastL = new Vector3(0,0,0);
+	
+	private void UpdateDESP(){
+		Vector3 pCurrentR = GetJointPos(KinectWrapper.Joints.HAND_RIGHT);
+		Vector3 spCurrentR = alpha * pCurrentR + (1.0f-alpha) * spLastR;
+		Vector3	s2pCurrentR = alpha * spCurrentR + (1.0f-alpha) * s2pLastR;
+		spLastR = spCurrentR;
+		s2pLastR = s2pCurrentR;
+		float alphaTerm = alpha * tau / (1.0f-alpha);
+		pPredictionR = (2 + alphaTerm) * spCurrentR - (1 + alphaTerm) * s2pCurrentR; 
+		
+		Vector3 pCurrentL = GetJointPos(KinectWrapper.Joints.HAND_LEFT);
+		Vector3 spCurrentL = alpha * pCurrentL + (1.0f-alpha) * spLastL;
+		Vector3	s2pCurrentL = alpha * spCurrentL + (1.0f-alpha) * s2pLastL;
+		spLastL = spCurrentL;
+		s2pLastL = s2pCurrentL;
+		pPredictionL = (2 + alphaTerm) * spCurrentL - (1 + alphaTerm) * s2pCurrentL; 
+	}
 
     //called every Unity frame (frame-rate dependent)
     private void Update() {
@@ -246,18 +272,28 @@ public class KUInterface : MonoBehaviour {
 					Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
 					Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0)) < 0.4f)
 			Debug.Log("Lightning");
+		
+		else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+					Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
+					Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) < 0.8f && 
+					Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) < 0.8f)
+			Debug.Log("Throw");
+		
 		else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
 					Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
 					Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
 					Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f)
 			Debug.Log("Force Push");
+		
 		else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
 					Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
 					Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
 					Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f)
 			Debug.Log("Heal");
+		
 		else if(magHandVec <= 0.10f)
 			Debug.Log("Lightsaber");
+		
 		Debug.Log(handVec);
 		transform.position = (leftHandPos+rightHandPos)/2 + new Vector3(0,2.0f,0);
 		handVec.Normalize();
