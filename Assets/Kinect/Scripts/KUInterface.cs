@@ -226,6 +226,40 @@ public class KUInterface : MonoBehaviour {
         if (useDepth) {
             UpdateDepth();
         }
+		Vector3 rightHandPos = pPredictionR;
+		Vector3 leftHandPos = pPredictionL;
+		Vector3 handVec = rightHandPos - leftHandPos;
+		float magHandVec = handVec.magnitude;
+		
+		Vector3 rightForearmVec = rightHandPos-GetJointPos(KinectWrapper.Joints.ELBOW_RIGHT);
+		Vector3 rightArmVec = rightHandPos-GetJointPos(KinectWrapper.Joints.SHOULDER_RIGHT);
+		rightForearmVec.Normalize();
+		rightArmVec.Normalize();
+		
+		Vector3 leftForearmVec = leftHandPos-GetJointPos(KinectWrapper.Joints.ELBOW_LEFT);
+		Vector3 leftArmVec = leftHandPos-GetJointPos(KinectWrapper.Joints.SHOULDER_LEFT);
+		leftForearmVec.Normalize();
+		leftArmVec.Normalize();
+		
+		if (Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+			Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0)) < 0.2f)
+			Debug.Log("Lightning");
+		else if (Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+					Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
+					Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
+					Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f)
+			Debug.Log("Force Push");
+		else if(magHandVec <= 0.10f)
+			Debug.Log("Lightsaber");
+		Debug.Log(handVec);
+		transform.position = (leftHandPos+rightHandPos)/2 + new Vector3(0,2.0f,0);
+		handVec.Normalize();
+		transform.rotation = 
+			Quaternion.Slerp(
+				transform.rotation, 
+				Quaternion.LookRotation(Vector3.Scale(handVec, new Vector3(1,1,-1))),
+				Time.deltaTime*5);
+		UpdateDESP();
     }
 
 
