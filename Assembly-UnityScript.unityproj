@@ -44,19 +44,32 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Explosions\Scripts\ElectricShockwave.js" />
+     <Compile Include="Assets\Explosions\Scripts\ExplosionControl.js" />
+     <Compile Include="Assets\Explosions\Scripts\ExplosionLine.js" />
+     <Compile Include="Assets\Explosions\Scripts\ExplosionTestCage.js" />
+     <Compile Include="Assets\Explosions\Scripts\ExplosionTrail.js" />
+     <Compile Include="Assets\Explosions\Scripts\MuzzleFlashAnimate.js" />
+     <Compile Include="Assets\Explosions\Scripts\ScaleAndDestroyRefractSphere.js" />
      <Compile Include="Assets\Scripts\Enemy.js" />
      <Compile Include="Assets\Scripts\MouseFollow.js" />
      <Compile Include="Assets\Scripts\PointsScript.js" />
      <Compile Include="Assets\Scripts\clockScript.js" />
      <None Include="Assets\Standard Assets\Projectors\Guidelines.txt" />
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Multiply.shader" />
+     <None Include="Assets\Shaders\Fx\ParticleAdditiveBlend.shader" />
+     <None Include="Assets\Shaders\Fx\Additive.shader" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\Shaders\Fx\ScreenRefract.shader" />
+     <None Include="Assets\Shaders\Fx\Multiply.shader" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Light.shader" />
+     <None Include="Assets\Shaders\Fx\ParticleAdditive.shader" />
      <None Include="Assets\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
      <None Include="Assets\Kinect\Documents\README.txt" />
      <None Include="Assets\Electricity\Shaders\lightning.shader" />
      <None Include="Assets\Kinect\Documents\BSD.txt" />
+     <None Include="Assets\Shaders\Fx\ParticleBlend.shader" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
