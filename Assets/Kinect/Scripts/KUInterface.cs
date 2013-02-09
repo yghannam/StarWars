@@ -288,8 +288,10 @@ public class KUInterface : MonoBehaviour {
 		else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
 					Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
 					Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
-					Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f)
+					Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f){
 			Debug.Log("Heal");
+			GameObject.FindGameObjectWithTag("MainCamera").SendMessage("UpdateLife", Time.deltaTime*5.0f);
+		}
 		
 		else if(magHandVec <= 0.10f)
 			Debug.Log("Lightsaber");

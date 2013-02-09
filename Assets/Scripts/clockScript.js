@@ -29,6 +29,11 @@ function UpdateScoreText()
     textfield.text = SCORE.ToString();
 }
 
+function UpdateLife(amount:float)
+{
+	LIFE += amount;
+}
+
 function Start () {
 	startTime = 100.0;
 	clockFGMaxWidth = clockFG.width;
