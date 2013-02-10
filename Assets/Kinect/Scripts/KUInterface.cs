@@ -201,6 +201,7 @@ public class KUInterface : MonoBehaviour {
 		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 		gos = GameObject.FindGameObjectsWithTag("enemy");
 		lightsaber = GameObject.Find ("LightSaber");
+		lightning = GameObject.Find("Lightning");
     }
 
 
@@ -226,6 +227,7 @@ public class KUInterface : MonoBehaviour {
 	GameObject[] gos;
 	GameObject mainCamera;
 	GameObject lightsaber;
+	GameObject lightning;
 	
 	
 	private void UpdateDESP(){
@@ -281,6 +283,7 @@ public class KUInterface : MonoBehaviour {
 		leftArmVec.Normalize();
 		
 		lightsaber.SetActiveRecursively(false);
+		lightning.SetActiveRecursively(false);
 
 		
 		if(magHandVec > 0 && magHandVec <= 0.20f){
@@ -302,7 +305,8 @@ public class KUInterface : MonoBehaviour {
 						Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
 						Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0)) < 0.4f){
 				Debug.Log("Lightning");
-				lightsaber.SetActiveRecursively(false);
+				//lightsaber.SetActiveRecursively(false);
+				lightning.SetActiveRecursively(true);
 			}
 			
 			else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 

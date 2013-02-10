@@ -52,6 +52,7 @@
      <Compile Include="Assets\Explosions\Scripts\MuzzleFlashAnimate.js" />
      <Compile Include="Assets\Explosions\Scripts\ScaleAndDestroyRefractSphere.js" />
      <Compile Include="Assets\Scripts\Enemy.js" />
+     <Compile Include="Assets\Scripts\Lightning.js" />
      <Compile Include="Assets\Scripts\MouseFollow.js" />
      <Compile Include="Assets\Scripts\PointsScript.js" />
      <Compile Include="Assets\Scripts\Weapon.js" />
