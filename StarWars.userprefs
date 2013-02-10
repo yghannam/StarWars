@@ -1,9 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Shaders\Fx\ParticleAdditive.shader">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Kinect\Scripts\KUInterface.cs">
     <Files>
-      <File FileName="Assets\Kinect\Scripts\KUInterface.cs" Line="1" Column="1" />
-      <File FileName="Assets\Shaders\Fx\ParticleAdditive.shader" Line="1" Column="1" />
+      <File FileName="Assets\Kinect\Scripts\KUInterface.cs" Line="283" Column="1" />
+      <File FileName="Assets\Scripts\Weapon.js" Line="12" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -198,6 +198,9 @@ public class KUInterface : MonoBehaviour {
         } else {
             displayDepthImage = false;
         }
+		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+		gos = GameObject.FindGameObjectsWithTag("enemy");
+		lightsaber = GameObject.Find ("LightSaber");
     }
 
 
@@ -205,9 +208,9 @@ public class KUInterface : MonoBehaviour {
     private void OnApplicationQuit() {
 
         //if Unity is in editor mode, the Kinect sensor will remain active
-        if (!Application.isEditor) {
+        //if (!Application.isEditor) {
             KinectWrapper.NuiContextUnInit();
-        }
+        //}
     }
 	
 	float alpha = 0.1f;
@@ -219,6 +222,11 @@ public class KUInterface : MonoBehaviour {
 	Vector3 pPredictionL = new Vector3(0,0,0);
 	Vector3 spLastL = new Vector3(0,0,0);
 	Vector3 s2pLastL = new Vector3(0,0,0);
+	
+	GameObject[] gos;
+	GameObject mainCamera;
+	GameObject lightsaber;
+	
 	
 	private void UpdateDESP(){
 		Vector3 pCurrentR = GetJointPos(KinectWrapper.Joints.HAND_RIGHT);
@@ -252,6 +260,11 @@ public class KUInterface : MonoBehaviour {
         if (useDepth) {
             UpdateDepth();
         }
+		
+		
+		
+		
+		
 		Vector3 rightHandPos = pPredictionR;
 		Vector3 leftHandPos = pPredictionL;
 		Vector3 handVec = rightHandPos - leftHandPos;
@@ -267,36 +280,65 @@ public class KUInterface : MonoBehaviour {
 		leftForearmVec.Normalize();
 		leftArmVec.Normalize();
 		
-		if (		Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
-					Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0)) < 0.4f &&
-					Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
-					Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0)) < 0.4f)
-			Debug.Log("Lightning");
+		lightsaber.SetActiveRecursively(false);
+
 		
-		else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
-					Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
-					Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) < 0.8f && 
-					Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) < 0.8f)
-			Debug.Log("Throw");
+		if(magHandVec > 0 && magHandVec <= 0.20f){
+			Debug.Log("Lightsaber");
+			lightsaber.SetActiveRecursively(true);
+			//gameObject.BroadcastMessage("Enable");
+			
+			//MeshRenderer[] lsChildren = lightsaber.GetComponentsInChildren<MeshRenderer>();
+			//foreach(MeshRenderer mr in lsChildren)
+			//	mr.enabled = false;
+			
+		}
+		else{
+			//gameObject.BroadcastMessage("Disable");
+			
 		
-		else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
-					Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
-					Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
-					Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f)
-			Debug.Log("Force Push");
-		
-		else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
-					Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
-					Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
-					Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f){
-			Debug.Log("Heal");
-			GameObject.FindGameObjectWithTag("MainCamera").SendMessage("UpdateLife", Time.deltaTime*5.0f);
+			if (		Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+						Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0)) < 0.4f &&
+						Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+						Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0)) < 0.4f){
+				Debug.Log("Lightning");
+				lightsaber.SetActiveRecursively(false);
+			}
+			
+			else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+						Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
+						Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) < 0.8f && 
+						Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) < 0.8f){
+				Debug.Log("Throw");
+				lightsaber.SetActiveRecursively(false);
+			}
+			
+			else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+						Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
+						Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
+						Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f){
+				Debug.Log("Force Push");
+				lightsaber.SetActiveRecursively(false);
+				foreach(GameObject go in gos){
+					Debug.Log(go);
+					go.rigidbody.AddForce(new Vector3(0, 0, 200));	
+				}
+				
+			}
+			
+			else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
+						Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
+						Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
+						Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f){
+				Debug.Log("Heal");
+				lightsaber.SetActiveRecursively(false);
+				mainCamera.SendMessage("UpdateLife", Time.deltaTime*5.0f);
+			}
 		}
 		
-		else if(magHandVec <= 0.10f)
-			Debug.Log("Lightsaber");
 		
-		Debug.Log(handVec);
+		
+		//Debug.Log(handVec);
 		transform.position = (leftHandPos+rightHandPos)/2 + new Vector3(0,2.0f,0);
 		handVec.Normalize();
 		transform.rotation = 

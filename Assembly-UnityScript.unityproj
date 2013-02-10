@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\Enemy.js" />
      <Compile Include="Assets\Scripts\MouseFollow.js" />
      <Compile Include="Assets\Scripts\PointsScript.js" />
+     <Compile Include="Assets\Scripts\Weapon.js" />
      <Compile Include="Assets\Scripts\clockScript.js" />
      <None Include="Assets\Standard Assets\Projectors\Guidelines.txt" />
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Multiply.shader" />
