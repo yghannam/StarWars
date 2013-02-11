@@ -199,11 +199,11 @@ public class KUInterface : MonoBehaviour {
             displayDepthImage = false;
         }
 		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-		gos = GameObject.FindGameObjectsWithTag("enemy");
 		lightsaber = GameObject.Find ("LightSaber");
 		lightning = GameObject.Find("Lightning");
+		lightning.SetActiveRecursively(false);
 		thrown = GameObject.Find("Thrown");
-		thrown.transform.position = new Vector3(4,2,-2);
+		//thrown.transform.position = new Vector3(4,2,-2);
     }
 
 
@@ -233,7 +233,6 @@ public class KUInterface : MonoBehaviour {
 	GameObject thrown;
 	
 	bool throwing = false;
-	Vector3 lastArmVec = new Vector3(0,0,0);
 	
 	private void UpdateDESP(){
 		Vector3 pCurrentR = GetJointPos(KinectWrapper.Joints.HAND_RIGHT);
@@ -288,78 +287,94 @@ public class KUInterface : MonoBehaviour {
 		leftArmVec.Normalize();
 		
 		lightsaber.SetActiveRecursively(false);
-		lightning.SetActiveRecursively(false);
 		
 		
 		
 		
-		if(magHandVec > 0 && magHandVec <= 0.20f){
+		if(magHandVec > 0.0f && magHandVec <= 0.15f){
 			Debug.Log("Lightsaber");
 			lightsaber.SetActiveRecursively(true);
-			//gameObject.BroadcastMessage("Enable");
-			
-			//MeshRenderer[] lsChildren = lightsaber.GetComponentsInChildren<MeshRenderer>();
-			//foreach(MeshRenderer mr in lsChildren)
-			//	mr.enabled = false;
-			
+			//throwing = false;
+			lightning.SetActiveRecursively(false);
+
 		}
 		else{
-			//gameObject.BroadcastMessage("Disable");
 			if(throwing){
-				if(Vector3.Dot(rightForearmVec, rightArmVec) > 0.8f )
-					lastArmVec = rightArmVec;			
-			
-				else{
+				Debug.Log("Throw");
+				Debug.Log("HandPos: "+ rightHandPos);
+				Vector3 throwingPosition = rightHandPos;
+				throwingPosition.z = 1.0f - throwingPosition.z;
+				throwingPosition = Vector3.Slerp(thrown.transform.position, Vector3.Scale(throwingPosition,new Vector3(20, 10, 20)), Time.deltaTime*5);
+				
+				thrown.transform.position = throwingPosition;
+				if(Vector3.Dot(rightForearmVec, rightArmVec) < 0.5f ||
+					Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f ||
+					Vector3.Dot(rightArmVec, new Vector3(0,-1,0)) > 0.8f){
+					
 					throwing = false;
-					//thrown.rigidbody.AddForce(lastArmVec-thrown.transform.position);
+					//thrown.SetActiveRecursively(true);
+					thrown.transform.position = new Vector3(4, 2, -2);
+					
 				}
 			}
-		
-			if (		Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
-						Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0)) < 0.4f &&
-						Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
-						Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0)) < 0.4f){
-				Debug.Log("Lightning");
-				//lightsaber.SetActiveRecursively(false);
-				lightning.SetActiveRecursively(true);
-			}
 			
-			else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
-						Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
-						Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) < 0.8f && 
-						Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) < 0.8f){
-				Debug.Log("Throw");
-				lightsaber.SetActiveRecursively(false);
-				throwing = true;
-				//thrown.transform.position = new Vector3(4, 2, -2);
-			}
-			
-			else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
-						Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
-						Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
-						Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f){
-				Debug.Log("Force Push");
-				lightsaber.SetActiveRecursively(false);
-				foreach(GameObject go in gos){
-					Debug.Log(go);
-					go.rigidbody.AddForce(new Vector3(0, 0, 200));	
+			else{
+				if (		Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+							Mathf.Abs(Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0))) < 0.4f &&
+							Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+							Mathf.Abs(Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0))) < 0.4f){
+					Debug.Log("Lightning");
+					lightning.SetActiveRecursively(true);
+					gos = GameObject.FindGameObjectsWithTag("droid");
+					foreach(GameObject go in gos){
+						Debug.Log(go);
+						go.SendMessage("Lightning");	
+					}
 				}
 				
-			}
-			
-			else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
-						Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
-						Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
-						Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f){
-				Debug.Log("Heal");
-				lightsaber.SetActiveRecursively(false);
-				mainCamera.SendMessage("UpdateLife", Time.deltaTime*5.0f);
+				else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+							Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
+							Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) < 0.8f && 
+							Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) < 0.8f){
+					Debug.Log("Throw");
+					lightsaber.SetActiveRecursively(false);
+					lightning.SetActiveRecursively(false);
+					throwing = true;
+				}
+				
+				else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+							Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
+							Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
+							Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f){
+					Debug.Log("Force Push");
+					lightsaber.SetActiveRecursively(false);
+					lightning.SetActiveRecursively(false);
+					gos = GameObject.FindGameObjectsWithTag("droid");
+					foreach(GameObject go in gos){
+						Debug.Log(go);
+						go.SendMessage("Push");	
+					}
+					
+				}
+				
+				else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
+							Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
+							Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
+							Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f){
+					Debug.Log("Heal");
+					lightsaber.SetActiveRecursively(false);
+					lightning.SetActiveRecursively(false);
+					mainCamera.SendMessage("UpdateLife", Time.deltaTime*10.0f);
+				}
+				else{
+					lightning.SetActiveRecursively(false);	
+				}
 			}
 		}
 		
 		
 		
-		//Debug.Log(handVec);
+		Debug.Log(magHandVec);
 		transform.position = (leftHandPos+rightHandPos)/2 + new Vector3(0,2.0f,0);
 		handVec.Normalize();
 		transform.rotation = 
