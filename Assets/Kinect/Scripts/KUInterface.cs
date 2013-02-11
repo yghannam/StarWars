@@ -202,6 +202,8 @@ public class KUInterface : MonoBehaviour {
 		gos = GameObject.FindGameObjectsWithTag("enemy");
 		lightsaber = GameObject.Find ("LightSaber");
 		lightning = GameObject.Find("Lightning");
+		thrown = GameObject.Find("Thrown");
+		thrown.transform.position = new Vector3(4,2,-2);
     }
 
 
@@ -228,7 +230,10 @@ public class KUInterface : MonoBehaviour {
 	GameObject mainCamera;
 	GameObject lightsaber;
 	GameObject lightning;
+	GameObject thrown;
 	
+	bool throwing = false;
+	Vector3 lastArmVec = new Vector3(0,0,0);
 	
 	private void UpdateDESP(){
 		Vector3 pCurrentR = GetJointPos(KinectWrapper.Joints.HAND_RIGHT);
@@ -284,7 +289,9 @@ public class KUInterface : MonoBehaviour {
 		
 		lightsaber.SetActiveRecursively(false);
 		lightning.SetActiveRecursively(false);
-
+		
+		
+		
 		
 		if(magHandVec > 0 && magHandVec <= 0.20f){
 			Debug.Log("Lightsaber");
@@ -298,7 +305,15 @@ public class KUInterface : MonoBehaviour {
 		}
 		else{
 			//gameObject.BroadcastMessage("Disable");
+			if(throwing){
+				if(Vector3.Dot(rightForearmVec, rightArmVec) > 0.8f )
+					lastArmVec = rightArmVec;			
 			
+				else{
+					throwing = false;
+					//thrown.rigidbody.AddForce(lastArmVec-thrown.transform.position);
+				}
+			}
 		
 			if (		Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
 						Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0)) < 0.4f &&
@@ -315,6 +330,8 @@ public class KUInterface : MonoBehaviour {
 						Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) < 0.8f){
 				Debug.Log("Throw");
 				lightsaber.SetActiveRecursively(false);
+				throwing = true;
+				//thrown.transform.position = new Vector3(4, 2, -2);
 			}
 			
 			else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
