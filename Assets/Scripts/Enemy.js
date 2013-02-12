@@ -8,39 +8,63 @@ var ini_z:float;
 var lost_points:int = 5;
 var LookAtPlayer: Transform;
 
+var damp = 0.5;
+var bullitPrefab: Transform;
+var savedTime = 0;
+var velocity: int = 200;
+static var CANSHOOT = false;
+static var CANDIE = false;
 
-function Start () {
-	var pos:Vector3 = transform.position;
-	ini_x = transform.position.x;
-	ini_y = transform.position.y;
-	ini_z = transform.position.z;
-	
-	var vector = Vector3(90,0,0);
-	var target = Quaternion.Euler(vector);
-	var rot:Quaternion = target;
-	beam.tag = "beam";
-	Instantiate(beam, pos, rot);
-	ratio = 0.0;
-}
+public var intentionalExplosion : GameObject;
+
+var forceUsed:int = 0;
 
 function Update () {
 	//maxz = 1 - 4
-	//maxx = -3.5 - 7
+	//maxx = -4 - 4
 	//maxy = 4 - 5
-	transform.position = Vector3(Mathf.PingPong(Time.time*1.5,7)-3.5,Mathf.PingPong(Time.time*1.5,1)+4,Mathf.PingPong(Time.time*1.5,3)+1);
-	
-	transform.LookAt(LookAtPlayer);
-	//do rotation to player.
-	ratio+=0.05;
-	beam = GameObject.FindWithTag("beam");
-	if(beam.transform.position.z > -3){
-		beam.transform.position = Vector3(ini_x, ini_y, ini_z-ratio);
-	}else{
-		ratio = 0.0;
-		ini_x = transform.position.x;
-		ini_y = transform.position.y;
-		ini_z = transform.position.z;
-		beam.transform.position = Vector3(ini_x, ini_y, ini_z-ratio);
+	transform.position = Vector3(Mathf.PingPong(Time.time*1.5,9)-5,Mathf.PingPong(Time.time*1.5,1)+2,Mathf.PingPong(Time.time*1.5,3)+1);
+	//always look to the player
+	if(LookAtPlayer){
+		var rotate = Quaternion.LookRotation(LookAtPlayer.position, transform.position);
+		transform.rotation = Quaternion.Slerp(transform.rotation, rotate, Time.deltaTime*damp);
+		transform.LookAt(LookAtPlayer);
+		
+		var seconds:int = Time.time;
+		var oddeven = (seconds % 2);
+		if(oddeven && CANSHOOT){
+			Shoot(seconds);
+		}
+	}
+	if(forceUsed == 1 && CANDIE){
+		Debug.Log("You have used the force");
+		Explode ();
 	}
 	
 }
+
+function ForceUsed(){
+	forceUsed = 1;
+}
+// Create the laser beams and shoot it to the player.
+function Shoot(seconds){
+	if(seconds != savedTime){
+		var bullit = Instantiate(bullitPrefab, transform.Find("spawnPoint").transform.position, Quaternion.identity); // Enemy's spawnPoint instantiate
+		bullit.rigidbody.AddForce(transform.forward * velocity); // speed of the beam
+		savedTime = seconds;
+	}
+}
+
+function Explode () {
+	Spawner.Spawn (intentionalExplosion, transform.position, Quaternion.identity);
+	Spawner.Destroy(gameObject);
+	FirstLevel.GUION = false;
+	SecondLevel.GUION = true;
+}
+
+/*  // This is for the random enemies.
+
+	var newPosition : Vector2 = Random.insideUnitCircle * 5;
+	transform.position.x = newPosition.x;
+	transform.position.y = newPosition.y;
+*/

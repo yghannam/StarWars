@@ -1,6 +1,6 @@
 #pragma strict
 
-var target : GameObject;
+var target : Vector3 = Vector3(0, 0, 5);
 
 var LR : LineRenderer;
 
@@ -20,11 +20,11 @@ function Update() {
 
     LR.SetPosition(0, transform.position);//make the origin of the LR the same as the transform
 
-    while (Vector3.Distance(target.transform.position, lastPoint) >.5) {//was the last arc not touching the target? 
+    while (Vector3.Distance(target, lastPoint) >.5) {//was the last arc not touching the target? 
 
             LR.SetVertexCount(i + 1);//then we need a new vertex in our line renderer
 
-            var fwd = target.transform.position - lastPoint;//gives the direction to our target from the end of the last arc
+            var fwd = target - lastPoint;//gives the direction to our target from the end of the last arc
 
             fwd.Normalize();//makes the direction to scale
 

@@ -1,12 +1,18 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Kinect\Scripts\KUInterface.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\clockScript.js">
     <Files>
-      <File FileName="Assets\Kinect\Scripts\KUInterface.cs" Line="236" Column="1" />
-      <File FileName="Assets\Scripts\Weapon.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\clockScript.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\clockScript.js" Line="46" Column="3" />
+      <File FileName="Assets\Kinect\Scripts\KUInterface.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\DroidAttack.js" Line="36" Column="21" />
+      <File FileName="Assets\Scripts\Lightning.js" Line="3" Column="36" />
+      <File FileName="Assets\Scripts\Helper.js" Line="42" Column="2" />
+      <File FileName="Assets\Scripts\SecondLevel.js" Line="45" Column="1" />
+      <File FileName="Assets\Scripts\FirstLevel.js" Line="1" Column="1" />
       <File FileName="Assets\Scripts\Enemy.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\PointsScript.js" Line="15" Column="25" />
+      <File FileName="Assets\Scripts\PointsScript.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\AddForceMove.js" Line="4" Column="22" />
+      <File FileName="Assets\Scripts\MenuManager.js" Line="13" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

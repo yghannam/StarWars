@@ -46,10 +46,17 @@
   <ItemGroup>
      <Compile Include="Assets\Electricity\Scripts\LightningBolt.cs" />
      <Compile Include="Assets\Kinect\Scripts\KUInterface.cs" />
+     <Compile Include="Assets\Scripts\Droid\GameScore.cs" />
+     <Compile Include="Assets\iTween\Sample\MoveSample.cs" />
+     <Compile Include="Assets\iTween\Sample\RotateSample.cs" />
+     <Compile Include="Assets\iTween\Sample\SampleInfo.cs" />
      <None Include="Assets\Standard Assets\Projectors\Guidelines.txt" />
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Multiply.shader" />
      <None Include="Assets\Shaders\Fx\ParticleAdditiveBlend.shader" />
      <None Include="Assets\Shaders\Fx\Additive.shader" />
+     <None Include="Assets\Textures\EnemySelfIlluminationReflective.shader" />
+     <None Include="Assets\iTween\ReadMe!\ReadMe!.txt" />
+     <None Include="Assets\Textures\Multiply.shader" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
      <None Include="Assets\Shaders\Fx\ScreenRefract.shader" />
      <None Include="Assets\Shaders\Fx\Multiply.shader" />
@@ -58,6 +65,7 @@
      <None Include="Assets\Shaders\Fx\ParticleAdditive.shader" />
      <None Include="Assets\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
      <None Include="Assets\Kinect\Documents\README.txt" />
+     <None Include="Assets\Textures\Additive.shader" />
      <None Include="Assets\Electricity\Shaders\lightning.shader" />
      <None Include="Assets\Kinect\Documents\BSD.txt" />
      <None Include="Assets\Shaders\Fx\ParticleBlend.shader" />

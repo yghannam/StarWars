@@ -1,10 +1,11 @@
 #pragma strict
 
-var isPaused:boolean = false;
+static var ISPAUSED:boolean = true;
 var startTime:float; //(in seconds)
 var timeRemaining:float; //(in seconds)
 var percent:float;
 static var LIFE: float = 100.0;
+static var ISPRESSED:float;
 
 // textures to hold life variable.
 var clockBG:Texture2D;
@@ -29,13 +30,8 @@ function UpdateScoreText()
     textfield.text = SCORE.ToString();
 }
 
-function UpdateLife(amount:float)
-{
-	LIFE += amount;
-}
-
 function Start () {
-	startTime = 100.0;
+	startTime = 60.0;
 	clockFGMaxWidth = clockFG.width;
 	textfield = GameObject.Find("GUI/txt-score").GetComponent(GUIText);
 	SCORE = 0;
@@ -44,11 +40,17 @@ function Start () {
 }
 
 function Update () {
-	if(!isPaused){
+	if(!ISPAUSED){
 		//make sure the timer is not paused
 		DoCountdown();
 		UpdateScoreText();
 	}
+	if(LIFE <= 0)
+		Debug.Log("Game Over");
+}
+
+function UpdateLife(amount:float){
+	LIFE +=  amount;
 }
 
 function OnGUI(){
@@ -61,6 +63,8 @@ function OnGUI(){
 	var pieClockHalfH:int = pieClockH * 0.5; // half the clock height
 	
 	var newBarWidth:float = (LIFE/100) * clockFGMaxWidth; // this is the width that the foreground bar should be
+
+
 	var gap:int = 20; // a spacing variable to help us position the clock
 	
 	GUI.BeginGroup(new Rect(Screen.width-clockBG.width-gap, gap, clockBG.width, clockBG.height));
@@ -101,25 +105,31 @@ function OnGUI(){
 }
 
 function DoCountdown(){
-	timeRemaining = startTime - Time.time;
+	timeRemaining = startTime - Time.time + ISPRESSED;
+	Debug.Log(Time.time);
 	percent = timeRemaining/startTime * 100;
 	if(timeRemaining < 0){
 		timeRemaining = 0;
-		isPaused =true;
+		ISPAUSED =true;
 		TimeIsUp();
-		//ShowTime();
 	}
 }
 
 function PauseClock(){
-	isPaused = true;
+	ISPAUSED = true;
 }
 
 function UnpauseClock(){
-	isPaused = false;
+	ISPAUSED = false;
 }
 
 function TimeIsUp(){
-	Debug.Log("Time is up!");
+	Enemy.CANSHOOT = false;
+	if(LIFE > 0 && !SecondLevel.attack){
+		GameObject.Find("Player_Wrapper").SendMessage("TrainerCanDie");
+		FirstLevel.GUION = true;
+		Enemy.CANDIE = true;
+		SecondLevel.ready = 0;
+	}
 }
 

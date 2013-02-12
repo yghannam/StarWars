@@ -6,17 +6,12 @@ function Start () {
 }
 
 function OnCollisionEnter(col:Collision){
-	if(col.gameObject.tag == "lightsaber"){
+	if(col.gameObject.tag == "Player"){
 		clockScript.SCORE = clockScript.SCORE + 10;
+		GameObject.Find("Player_Wrapper").SendMessage("PlayLaserCollision");
 	}
 	if(col.gameObject.tag == "wall"){
 		clockScript.LIFE = clockScript.LIFE - 10;
-		if(clockScript.LIFE < 0)
-			clockScript.LIFE = 0;
-		Debug.Log(clockScript.LIFE);
+		Destroy (gameObject);
 	}
-}
-
-function Update () {
-
 }

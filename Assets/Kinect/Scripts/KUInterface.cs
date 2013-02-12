@@ -198,11 +198,13 @@ public class KUInterface : MonoBehaviour {
         } else {
             displayDepthImage = false;
         }
-		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-		lightsaber = GameObject.Find ("LightSaber");
-		lightning = GameObject.Find("Lightning");
-		lightning.SetActiveRecursively(false);
-		thrown = GameObject.Find("Thrown");
+		if(!inMenu){
+			mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+			lightsaber = GameObject.Find ("LightSaber");
+			lightning = GameObject.Find("Lightning");
+			lightning.SetActiveRecursively(false);
+			thrown = GameObject.Find("Thrown");
+		}
 		//thrown.transform.position = new Vector3(4,2,-2);
     }
 
@@ -232,7 +234,35 @@ public class KUInterface : MonoBehaviour {
 	GameObject lightning;
 	GameObject thrown;
 	
+	bool trainerCanDie = false;
+	
+	float radius = 10.0f;
+	float power = 50000.0f;
+	
 	bool throwing = false;
+	bool pushed = false;
+	bool inMenu = false;
+	
+	public AudioClip laserHit;
+	public AudioClip droidHit;
+	
+	public void EnableMenu(){
+			inMenu = true;
+	}
+	
+	public void TrainerCanDie(){
+		trainerCanDie = true;	
+	}
+	
+	public void PlayLaserCollision(){
+		gameObject.audio.clip = laserHit;
+		gameObject.audio.Play();	
+	}
+	
+	public void PlayDroidCollision(){
+		gameObject.audio.clip = droidHit;
+		gameObject.audio.Play();	
+	}
 	
 	private void UpdateDESP(){
 		Vector3 pCurrentR = GetJointPos(KinectWrapper.Joints.HAND_RIGHT);
@@ -286,103 +316,146 @@ public class KUInterface : MonoBehaviour {
 		leftForearmVec.Normalize();
 		leftArmVec.Normalize();
 		
-		lightsaber.SetActiveRecursively(false);
+		//lightsaber.SetActiveRecursively(false);
 		
-		
-		
-		
-		if(magHandVec > 0.0f && magHandVec <= 0.15f){
-			Debug.Log("Lightsaber");
-			lightsaber.SetActiveRecursively(true);
-			//throwing = false;
-			lightning.SetActiveRecursively(false);
-
+		if(inMenu){
+			//Debug.Log("in menu");
+			//Debug.Log(rightForearmVec.normalized);
+			if(Vector3.Dot(rightForearmVec, new Vector3(0, 1, 0)) > 0.8f){
+				//Debug.Log(rightForearmVec);
+				gameObject.SendMessage("MoveUp");
+			}
 		}
 		else{
-			if(throwing){
-				Debug.Log("Throw");
-				Debug.Log("HandPos: "+ rightHandPos);
-				Vector3 throwingPosition = rightHandPos;
-				throwingPosition.z = 1.0f - throwingPosition.z;
-				throwingPosition = Vector3.Slerp(thrown.transform.position, Vector3.Scale(throwingPosition,new Vector3(20, 10, 20)), Time.deltaTime*5);
+		
+		
+			if(magHandVec > 0.0f && magHandVec <= 0.25f){
+				//Debug.Log("Lightsaber");
+				lightsaber.SetActiveRecursively(true);
+				//throwing = false;
+				lightning.SetActiveRecursively(false);
+				pushed = false;
+				//lightsaber.audio.Play();
+			}
+			else{
+				lightsaber.SetActiveRecursively(false);
+				if(throwing){
+					//Debug.Log("Throw");
+					//Debug.Log("HandPos: "+ rightHandPos);
+					Vector3 throwingPosition = rightHandPos;
+					throwingPosition.z = 1.0f - throwingPosition.z;
+					throwingPosition = Vector3.Slerp(thrown.transform.position, Vector3.Scale(throwingPosition,new Vector3(20, 10, 20)), Time.deltaTime*5);
+					
+					thrown.transform.position = throwingPosition;
+					if(Vector3.Dot(rightForearmVec, rightArmVec) < 0.5f ||
+						Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f ||
+						Vector3.Dot(rightArmVec, new Vector3(0,-1,0)) > 0.8f){
+						
+						throwing = false;
+						//thrown.SetActiveRecursively(true);
+						thrown.transform.position = new Vector3(4, 2, -10);
+						
+					}
+				}
 				
-				thrown.transform.position = throwingPosition;
-				if(Vector3.Dot(rightForearmVec, rightArmVec) < 0.5f ||
-					Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f ||
-					Vector3.Dot(rightArmVec, new Vector3(0,-1,0)) > 0.8f){
+				else{
+					if (		Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+								Mathf.Abs(Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0))) < 0.4f &&
+								Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
+								Mathf.Abs(Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0))) < 0.4f){
+						//Debug.Log("Lightning");
+						lightning.SetActiveRecursively(true);
+						
+						if(trainerCanDie){
+							GameObject go = GameObject.Find("JediTraining");
+							//Debug.Log(go);
+							go.SendMessage("ForceUsed");
+							trainerCanDie = false;
+						}
+						gos = GameObject.FindGameObjectsWithTag("droid");
+						foreach(GameObject go in gos){
+							//Debug.Log(go);
+							go.SendMessage("Lightning");	
+						}
+						pushed = false;
+					}
 					
-					throwing = false;
-					//thrown.SetActiveRecursively(true);
-					thrown.transform.position = new Vector3(4, 2, -2);
+					else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+								Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
+								Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) < 0.8f && 
+								Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) < 0.8f){
+						//Debug.Log("Throw");
+						lightsaber.SetActiveRecursively(false);
+						lightning.SetActiveRecursively(false);
+						throwing = true;
+						pushed = false;
+					}
 					
+					else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
+								Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
+								Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
+								Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f){
+						//Debug.Log("Force Push");
+						//lightsaber.SetActiveRecursively(false);
+						lightning.SetActiveRecursively(false);
+						// Applies an explosion force to all nearby rigidbodies
+						if(!pushed){
+							pushed = true;
+							Vector3 explosionPos = transform.position;
+							Collider[] colliders = Physics.OverlapSphere (explosionPos, radius);
+							foreach (Collider hit in colliders) {
+								if (!hit)
+									continue;
+								if (hit.rigidbody)
+									hit.rigidbody.AddExplosionForce(power, explosionPos, radius, 0.5f);
+							}
+						}					
+					}
+					
+					else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
+								Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
+								Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
+								Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f){
+						//Debug.Log("Heal");
+						lightsaber.SetActiveRecursively(false);
+						lightning.SetActiveRecursively(false);
+						mainCamera.SendMessage("UpdateLife", Time.deltaTime*10.0f);
+						pushed = false;
+					}
+					
+					else if(Vector3.Dot((rightHandPos-GetJointPos(KinectWrapper.Joints.HEAD)).normalized, new Vector3(1,0,0)) > 0.8f){
+						mainCamera.SendMessage("Ready");	
+						pushed = false;
+					}
+					
+					else if(Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
+								//Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
+								Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f)// && 
+								//Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f){
+					{
+						mainCamera.SendMessage("ShowFuture", true);
+					}
+					
+					else{
+						mainCamera.SendMessage("ShowFuture", false);
+						pushed = false;
+						lightning.SetActiveRecursively(false);	
+					}
 				}
 			}
 			
-			else{
-				if (		Vector3.Dot(rightForearmVec, new Vector3(0,0,-1)) > 0.8f && 
-							Mathf.Abs(Vector3.Dot (rightForearmVec, new Vector3(0, 1, 0))) < 0.4f &&
-							Vector3.Dot(leftForearmVec, new Vector3(0,0,-1)) > 0.8f && 
-							Mathf.Abs(Vector3.Dot (leftForearmVec, new Vector3(0, 1, 0))) < 0.4f){
-					Debug.Log("Lightning");
-					lightning.SetActiveRecursively(true);
-					gos = GameObject.FindGameObjectsWithTag("droid");
-					foreach(GameObject go in gos){
-						Debug.Log(go);
-						go.SendMessage("Lightning");	
-					}
-				}
-				
-				else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
-							Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
-							Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) < 0.8f && 
-							Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) < 0.8f){
-					Debug.Log("Throw");
-					lightsaber.SetActiveRecursively(false);
-					lightning.SetActiveRecursively(false);
-					throwing = true;
-				}
-				
-				else if (	Vector3.Dot(rightForearmVec, new Vector3(1,0,0)) > 0.8f && 
-							Vector3.Dot(rightArmVec, new Vector3(1,0,0)) > 0.8f && 
-							Vector3.Dot(leftForearmVec, new Vector3(-1,0,0)) > 0.8f && 
-							Vector3.Dot(leftArmVec, new Vector3(-1,0,0)) > 0.8f){
-					Debug.Log("Force Push");
-					lightsaber.SetActiveRecursively(false);
-					lightning.SetActiveRecursively(false);
-					gos = GameObject.FindGameObjectsWithTag("droid");
-					foreach(GameObject go in gos){
-						Debug.Log(go);
-						go.SendMessage("Push");	
-					}
-					
-				}
-				
-				else if (	Vector3.Dot(rightForearmVec, new Vector3(0,1,0)) > 0.8f && 
-							Vector3.Dot(rightArmVec, new Vector3(0,1,0)) > 0.8f && 
-							Vector3.Dot(leftForearmVec, new Vector3(0,1,0)) > 0.8f && 
-							Vector3.Dot(leftArmVec, new Vector3(0,1,0)) > 0.8f){
-					Debug.Log("Heal");
-					lightsaber.SetActiveRecursively(false);
-					lightning.SetActiveRecursively(false);
-					mainCamera.SendMessage("UpdateLife", Time.deltaTime*10.0f);
-				}
-				else{
-					lightning.SetActiveRecursively(false);	
-				}
-			}
+			
+			
+			//Debug.Log(magHandVec);
+			transform.position = leftHandPos + new Vector3(0,2.0f,0);
+			handVec.Normalize();
+			transform.rotation = 
+				Quaternion.Slerp(
+					transform.rotation, 
+					Quaternion.LookRotation(Vector3.Scale(handVec, new Vector3(1,1,-1))),
+					Time.deltaTime*5);
+			UpdateDESP();
 		}
-		
-		
-		
-		Debug.Log(magHandVec);
-		transform.position = (leftHandPos+rightHandPos)/2 + new Vector3(0,2.0f,0);
-		handVec.Normalize();
-		transform.rotation = 
-			Quaternion.Slerp(
-				transform.rotation, 
-				Quaternion.LookRotation(Vector3.Scale(handVec, new Vector3(1,1,-1))),
-				Time.deltaTime*5);
-		UpdateDESP();
     }
 
 
